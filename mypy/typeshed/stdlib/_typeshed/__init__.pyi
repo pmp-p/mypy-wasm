@@ -7,7 +7,7 @@ import ctypes
 import mmap
 import pickle
 import sys
-from collections.abc import Awaitable, Callable, Container, Iterable, Set as AbstractSet
+from collections.abc import Awaitable, Callable, Iterable, Set as AbstractSet
 from os import PathLike
 from types import FrameType, TracebackType
 from typing import Any, AnyStr, Generic, Protocol, TypeVar, Union
@@ -115,16 +115,17 @@ class SupportsItems(Protocol[_KT_co, _VT_co]):
 # stable
 class SupportsKeysAndGetItem(Protocol[_KT, _VT_co]):
     def keys(self) -> Iterable[_KT]: ...
-    def __getitem__(self, __k: _KT) -> _VT_co: ...
+    def __getitem__(self, __key: _KT) -> _VT_co: ...
 
 # stable
-class SupportsGetItem(Container[_KT_contra], Protocol[_KT_contra, _VT_co]):
-    def __getitem__(self, __k: _KT_contra) -> _VT_co: ...
+class SupportsGetItem(Protocol[_KT_contra, _VT_co]):
+    def __contains__(self, __x: object) -> bool: ...
+    def __getitem__(self, __key: _KT_contra) -> _VT_co: ...
 
 # stable
 class SupportsItemAccess(SupportsGetItem[_KT_contra, _VT], Protocol[_KT_contra, _VT]):
-    def __setitem__(self, __k: _KT_contra, __v: _VT) -> None: ...
-    def __delitem__(self, __v: _KT_contra) -> None: ...
+    def __setitem__(self, __key: _KT_contra, __value: _VT) -> None: ...
+    def __delitem__(self, __key: _KT_contra) -> None: ...
 
 StrPath: TypeAlias = str | PathLike[str]  # stable
 BytesPath: TypeAlias = bytes | PathLike[bytes]  # stable
@@ -265,6 +266,10 @@ class structseq(Generic[_T_co]):
 
 # Superset of typing.AnyStr that also inclues LiteralString
 AnyOrLiteralStr = TypeVar("AnyOrLiteralStr", str, bytes, LiteralString)  # noqa: Y001
+
+# Represents when str or LiteralStr is acceptable. Useful for string processing
+# APIs where literalness of return value depends on literalness of inputs
+StrOrLiteralStr = TypeVar("StrOrLiteralStr", LiteralString, str)  # noqa: Y001
 
 # Objects suitable to be passed to sys.setprofile, threading.setprofile, and similar
 ProfileFunction: TypeAlias = Callable[[FrameType, str, Any], object]

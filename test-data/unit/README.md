@@ -85,11 +85,6 @@ First install any additional dependencies needed for testing:
 
     python3 -m pip install -U -r test-requirements.txt
 
-You must also have a Python 2.7 binary installed that can import the `typing`
-module:
-
-    python2 -m pip install -U typing
-
 The unit test suites are driven by the `pytest` framework. To run all mypy tests,
 run `pytest` in the mypy repository:
 
@@ -180,6 +175,10 @@ full builtins and library stubs instead of minimal ones. Run them using
 
 Note that running more processes than logical cores is likely to
 significantly decrease performance.
+
+To run tests with coverage:
+
+    python3 -m pytest --cov mypy --cov-config setup.cfg  --cov-report=term-missing:skip-covered --cov-report=html
 
 
 Debugging

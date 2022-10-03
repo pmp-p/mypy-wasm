@@ -6,15 +6,17 @@ Getting started
 This chapter introduces some core concepts of mypy, including function
 annotations, the :py:mod:`typing` module, stub files, and more.
 
-Be sure to read this chapter carefully, as the rest of the documentation
+If you're looking for a quick intro, see the
+:ref:`mypy cheatsheet <cheat-sheet-py3>`.
+
+If you're unfamiliar with the concepts of static and dynamic type checking,
+be sure to read this chapter carefully, as the rest of the documentation
 may not make much sense otherwise.
 
 Installing and running mypy
 ***************************
 
-Mypy requires Python 3.6 or later to run.  Once you've
-`installed Python 3 <https://www.python.org/downloads/>`_,
-install mypy using pip:
+Mypy requires Python 3.7 or later to run.  You can install mypy using pip:
 
 .. code-block:: shell
 
@@ -31,23 +33,16 @@ out any errors it finds. Mypy will type check your code *statically*: this
 means that it will check for errors without ever running your code, just
 like a linter.
 
-This means that you are always free to ignore the errors mypy reports and
-treat them as just warnings, if you so wish: mypy runs independently from
-Python itself.
+This also means that you are always free to ignore the errors mypy reports,
+if you so wish. You can always use the Python interpreter to run your code,
+even if mypy reports errors.
 
 However, if you try directly running mypy on your existing Python code, it
-will most likely report little to no errors: you must add *type annotations*
-to your code to take full advantage of mypy. See the section below for details.
+will most likely report little to no errors. This is a feature! It makes it
+easy to adopt mypy incrementally.
 
-.. note::
-
-  Although you must install Python 3 to run mypy, mypy is fully capable of
-  type checking Python 2 code as well: just pass in the :option:`--py2 <mypy --py2>` flag. See
-  :ref:`python2` for more details.
-
-  .. code-block:: shell
-
-      $ mypy --py2 program.py
+In order to get useful diagnostics from mypy, you must add *type annotations*
+to your code. See the section below for details.
 
 Function signatures and dynamic vs static typing
 ************************************************
@@ -87,13 +82,6 @@ calls since the arguments have invalid types:
    greeting(3)         # Argument 1 to "greeting" has incompatible type "int"; expected "str"
    greeting(b'Alice')  # Argument 1 to "greeting" has incompatible type "bytes"; expected "str"
 
-Note that this is all still valid Python 3 code! The function annotation syntax
-shown above was added to Python :pep:`as a part of Python 3.0 <3107>`.
-
-If you are trying to type check Python 2 code, you can add type hints
-using a comment-based syntax instead of the Python 3 annotation syntax.
-See our section on :ref:`typing Python 2 code <python2>` for more details.
-
 Being able to pick whether you want a function to be dynamically or statically
 typed can be very helpful. For example, if you are migrating an existing
 Python codebase to use static types, it's usually easier to migrate by incrementally
@@ -104,12 +92,6 @@ the code using dynamic typing and only add type hints later once the code is mor
 Once you are finished migrating or prototyping your code, you can make mypy warn you
 if you add a dynamic function by mistake by using the :option:`--disallow-untyped-defs <mypy --disallow-untyped-defs>`
 flag. See :ref:`command-line` for more information on configuring mypy.
-
-.. note::
-
-   The earlier stages of analysis performed by mypy may report errors
-   even for dynamically typed functions. However, you should not rely
-   on this, as this may change in the future.
 
 More function signatures
 ************************
@@ -143,7 +125,7 @@ Arguments with default values can be annotated like so:
 .. code-block:: python
 
    def greeting(name: str, excited: bool = False) -> str:
-       message = 'Hello, {}'.format(name)
+       message = f'Hello, {name}'
        if excited:
            message += '!!!'
        return message
@@ -227,7 +209,7 @@ ints or strings, but no other types. You can express this using the :py:data:`~t
 
    def normalize_id(user_id: Union[int, str]) -> str:
        if isinstance(user_id, int):
-           return 'user-{}'.format(100000 + user_id)
+           return f'user-{100_000 + user_id}'
        else:
            return user_id
 
@@ -248,7 +230,7 @@ to help function signatures look a little cleaner:
        return 'Hello, ' + name
 
 The :py:mod:`typing` module contains many other useful types. You can find a
-quick overview by looking through the :ref:`mypy cheatsheets <overview-cheat-sheets>`
+quick overview by looking through the :ref:`mypy cheatsheet <cheat-sheet-py3>`
 and a more detailed overview (including information on how to make your own
 generic types or your own type aliases) by looking through the
 :ref:`type system reference <overview-type-system-reference>`.
@@ -450,7 +432,7 @@ often suggest the name of the stub distribution:
 
 .. code-block:: text
 
-  prog.py:1: error: Library stubs not installed for "yaml" (or incompatible with Python 3.8)
+  prog.py:1: error: Library stubs not installed for "yaml"
   prog.py:1: note: Hint: "python3 -m pip install types-PyYAML"
   ...
 
@@ -487,8 +469,7 @@ If you are in a hurry and don't want to read lots of documentation
 before getting started, here are some pointers to quick learning
 resources:
 
-* Read the :ref:`mypy cheatsheet <cheat-sheet-py3>` (also for
-  :ref:`Python 2 <cheat-sheet-py2>`).
+* Read the :ref:`mypy cheatsheet <cheat-sheet-py3>`.
 
 * Read :ref:`existing-code` if you have a significant existing
   codebase without many type annotations.
